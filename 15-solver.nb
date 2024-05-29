@@ -1,0 +1,745 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     31953,        737]
+NotebookOptionsPosition[     31349,        718]
+NotebookOutlinePosition[     31771,        735]
+CellTagsIndexPosition[     31728,        732]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"SetOptions", "[", 
+    RowBox[{"$FrontEnd", ",", 
+     RowBox[{"DynamicEvaluationTimeout", "->", "Infinity"}]}], "]"}], ";"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Initial", " ", "position", " ", "of", " ", "the", " ", "tile", " ", "x"}],
+    " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"initPosition", "[", "x_", "]"}], ":=", 
+    RowBox[{
+     RowBox[{"QuotientRemainder", "[", 
+      RowBox[{"x", ",", "4"}], "]"}], "+", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "1"}], "}"}]}]}], ";"}], " ", "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Heuristic", " ", "function", " ", "used", " ", "to", " ", "estimate", " ",
+     "how", " ", "far", " ", "is", " ", "some", " ", "state", " ", "from", 
+    " ", "the", " ", 
+    RowBox[{"goal", ".", " ", "More"}], " ", "about", " ", "it", " ", "in", 
+    " ", 
+    RowBox[{"README", ".", "md"}]}], " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"h", "[", "state_", "]"}], ":=", 
+    RowBox[{"Total", "[", 
+     RowBox[{
+      RowBox[{"Table", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"state", "[", 
+            RowBox[{"[", 
+             RowBox[{"i", ",", "j"}], "]"}], "]"}], "+", "1"}], ")"}], "*", 
+         RowBox[{"ManhattanDistance", "[", 
+          RowBox[{
+           RowBox[{"initPosition", "[", 
+            RowBox[{"state", "[", 
+             RowBox[{"[", 
+              RowBox[{"i", ",", "j"}], "]"}], "]"}], "]"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"i", ",", "j"}], "}"}]}], "]"}]}], ",", 
+        RowBox[{"{", 
+         RowBox[{"i", ",", "4"}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"j", ",", "4"}], "}"}]}], "]"}], ",", "2"}], "]"}]}], ";"}], 
+  "\[IndentingNewLine]", " ", "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Function", " ", "to", " ", "determine", " ", "where", " ", "the", " ", 
+    "space", " ", "can", " ", "be", " ", "moved"}], " ", 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"possibleDirs", "[", "pos_", "]"}], ":=", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+         "pos", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}], ">", 
+         "1"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"0", ",", 
+          RowBox[{"-", "1"}]}], "}"}], ",", "Nothing"}], "]"}], ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+         "pos", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}], "<", 
+         "4"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"0", ",", "1"}], "}"}], ",", "Nothing"}], "]"}], ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+         "pos", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], ">", 
+         "1"}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"-", "1"}], ",", "0"}], "}"}], ",", "Nothing"}], "]"}], ",",
+       "\[IndentingNewLine]", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+         "pos", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], "<", 
+         "4"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"1", ",", "0"}], "}"}], ",", "Nothing"}], "]"}]}], 
+     "\[IndentingNewLine]", "}"}]}], ";"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Takes", " ", "the", " ", "current", " ", "gameField", " ", "and", " ", 
+    "moves", " ", "the", " ", "tile", " ", "from", " ", "the", " ", 
+    "position", " ", "a", " ", "in", " ", "specified", " ", "direction"}], 
+   " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"move", "[", 
+     RowBox[{"gameField_", ",", "a_", ",", "dir_"}], "]"}], ":=", 
+    RowBox[{"Block", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"b", ",", "gf"}], "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"b", "=", 
+        RowBox[{"a", "+", "dir"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"gf", "=", "gameField"}], ";", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"gf", "\[LeftDoubleBracket]", 
+           RowBox[{"Sequence", "@@", "a"}], "\[RightDoubleBracket]"}], ",", 
+          RowBox[{"gf", "\[LeftDoubleBracket]", 
+           RowBox[{"Sequence", "@@", "b"}], "\[RightDoubleBracket]"}]}], 
+         "}"}], "=", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"gf", "\[LeftDoubleBracket]", 
+           RowBox[{"Sequence", "@@", "b"}], "\[RightDoubleBracket]"}], ",", 
+          RowBox[{"gf", "\[LeftDoubleBracket]", 
+           RowBox[{"Sequence", "@@", "a"}], "\[RightDoubleBracket]"}]}], 
+         "}"}]}], ";", "\[IndentingNewLine]", "gf"}]}], "\[IndentingNewLine]",
+      "]"}]}], ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{"DynamicModule", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+    "sortedState", ",", "gameField", ",", "spacePos", ",", "solution", ",", 
+     "solve", ",", "displaySolution", ",", "shuffle"}], "}"}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"sortedState", "=", 
+     RowBox[{"Table", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"4", "*", "i"}], "+", "j", "-", "5"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"i", ",", "4"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"j", ",", "4"}], "}"}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"gameField", "=", "sortedState"}], ";", "\[IndentingNewLine]", 
+    RowBox[{"spacePos", "=", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "1"}], "}"}]}], ";", "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"shuffle", "[", "]"}], ":=", 
+     RowBox[{"Block", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"moves", ",", "m"}], "}"}], ",", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"Do", "[", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"moves", "=", 
+            RowBox[{"possibleDirs", "[", "spacePos", "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"m", "=", 
+            RowBox[{"RandomChoice", "[", "moves", "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"gameField", "=", 
+            RowBox[{"move", "[", 
+             RowBox[{"gameField", ",", "spacePos", ",", "m"}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"spacePos", "+=", "m"}]}], "\[IndentingNewLine]", ",", 
+          "2000"}], "]"}], ";"}]}], "\[IndentingNewLine]", "]"}]}], ";", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"solve", "[", "]"}], ":=", 
+     RowBox[{"Block", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+        "startState", ",", "currentState", ",", "currentSpacePos", ",", 
+         "neighbors", ",", "state", ",", "newCost", ",", "ans", ",", 
+         "doRandomMoves", ",", "frontier", ",", "cameFrom", ",", "cost"}], 
+        "}"}], ",", " ", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"ans", "=", 
+         RowBox[{"{", "}"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"startState", "=", "gameField"}], ";", "\[IndentingNewLine]", 
+        "\[IndentingNewLine]", 
+        RowBox[{"(*", " ", 
+         RowBox[{"Does", " ", "50", " ", "random", " ", 
+          RowBox[{"moves", ".", " ", "It"}], " ", "is", " ", "useful", " ", 
+          "in", " ", "hard", " ", "states", " ", "and", " ", "allows", " ", 
+          "us", " ", "to", " ", "reach", " ", "\"\<average\>\"", " ", "state",
+           " ", "solvable", " ", "by", " ", "the", " ", "main", " ", 
+          "algorithm"}], " ", "*)"}], "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"doRandomMoves", "[", "]"}], ":=", 
+         RowBox[{"Block", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{"moves", ",", "sp", ",", "prev"}], "}"}], ",", 
+           "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{"sp", "=", 
+             RowBox[{"FirstPosition", "[", 
+              RowBox[{"startState", ",", "0"}], "]"}]}], ";", 
+            "\[IndentingNewLine]", 
+            RowBox[{"prev", "=", "Null"}], ";", "\[IndentingNewLine]", 
+            RowBox[{"NestList", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"(", "\[IndentingNewLine]", 
+                RowBox[{
+                 RowBox[{"prev", "=", 
+                  RowBox[{"RandomChoice", "[", 
+                   RowBox[{
+                    RowBox[{"possibleDirs", "[", "sp", "]"}], "//", 
+                    RowBox[{"DeleteCases", "[", 
+                    RowBox[{"-", "prev"}], "]"}]}], "]"}]}], ";", 
+                 "\[IndentingNewLine]", 
+                 RowBox[{"sp", "+=", "prev"}], ";", "\[IndentingNewLine]", 
+                 RowBox[{"move", "[", 
+                  RowBox[{"#", ",", 
+                   RowBox[{"sp", "-", "prev"}], ",", "prev"}], "]"}]}], ")"}],
+                "&"}], ",", "startState", ",", "50"}], "]"}]}]}], 
+          "\[IndentingNewLine]", "]"}]}], ";", "\[IndentingNewLine]", 
+        "\[IndentingNewLine]", 
+        RowBox[{"While", "[", 
+         RowBox[{"True", ",", "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"frontier", "=", 
+            RowBox[{"CreateDataStructure", "[", 
+             RowBox[{"\"\<PriorityQueue\>\"", ",", 
+              RowBox[{"{", 
+               RowBox[{"{", 
+                RowBox[{"0", ",", " ", "startState"}], "}"}], "}"}], ",", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"First", "[", "#1", "]"}], ">", 
+                RowBox[{"First", "[", "#2", "]"}]}], "&"}]}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"cameFrom", "=", 
+            RowBox[{"<|", 
+             RowBox[{"startState", "->", "Null"}], "|>"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"cost", "=", 
+            RowBox[{"<|", 
+             RowBox[{"startState", "->", "0"}], "|>"}]}], ";", 
+           "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{"(*", " ", 
+            RowBox[{
+             RowBox[{
+             "A", "*", " ", "algorithm", " ", "with", " ", "10", " ", "sec", 
+              " ", "time", " ", 
+              RowBox[{"limit", ".", " ", "When"}], " ", "time", " ", "limit", 
+              " ", "reached"}], ",", " ", 
+             RowBox[{
+             "we", " ", "do", " ", "random", " ", "moves", " ", "and", " ", 
+              RowBox[{"restart", "."}]}]}], " ", "*)"}], 
+           "\[IndentingNewLine]", 
+           RowBox[{"TimeConstrained", "[", "\[IndentingNewLine]", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"While", "[", 
+               RowBox[{"True", ",", "\[IndentingNewLine]", 
+                RowBox[{
+                 RowBox[{"currentState", "=", 
+                  RowBox[{"Last", "@", 
+                   RowBox[{"frontier", "[", "\"\<Pop\>\"", "]"}]}]}], ";", 
+                 "\[IndentingNewLine]", 
+                 RowBox[{"If", "[", 
+                  RowBox[{
+                   RowBox[{"currentState", "==", "sortedState"}], ",", 
+                   RowBox[{"Break", "[", "]"}], ",", "Null"}], "]"}], ";", 
+                 "\[IndentingNewLine]", 
+                 RowBox[{"currentSpacePos", "=", 
+                  RowBox[{"FirstPosition", "[", 
+                   RowBox[{"currentState", ",", "0"}], "]"}]}], ";", 
+                 "\[IndentingNewLine]", 
+                 RowBox[{"neighbors", "=", 
+                  RowBox[{
+                   RowBox[{
+                    RowBox[{"move", "[", 
+                    RowBox[{
+                    "currentState", ",", "currentSpacePos", ",", "#"}], "]"}],
+                     "&"}], "/@", 
+                   RowBox[{"possibleDirs", "[", "currentSpacePos", "]"}]}]}], 
+                 ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+                 RowBox[{"newCost", "=", 
+                  RowBox[{
+                   RowBox[{"cost", "[", "currentState", "]"}], "+", "1"}]}], 
+                 ";", "\[IndentingNewLine]", 
+                 RowBox[{"Scan", "[", 
+                  RowBox[{
+                   RowBox[{
+                    RowBox[{"(", "\[IndentingNewLine]", 
+                    RowBox[{
+                    RowBox[{"If", "[", 
+                    RowBox[{
+                    RowBox[{"newCost", "<", 
+                    RowBox[{"Lookup", "[", 
+                    RowBox[{"cost", ",", 
+                    RowBox[{"Key", "[", "#", "]"}], ",", "1*^18"}], "]"}]}], 
+                    ",", "\[IndentingNewLine]", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"cost", "[", "#", "]"}], "=", "newCost"}], ";", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{"frontier", "[", 
+                    RowBox[{"\"\<Push\>\"", ",", 
+                    RowBox[{"{", 
+                    RowBox[{
+                    RowBox[{"newCost", "+", 
+                    RowBox[{"h", "[", "#", "]"}]}], ",", "#"}], "}"}]}], 
+                    "]"}], ";", "\[IndentingNewLine]", 
+                    RowBox[{
+                    RowBox[{"cameFrom", "[", "#", "]"}], "=", 
+                    "currentState"}]}], ",", "\[IndentingNewLine]", "Null"}], 
+                    "]"}], ";"}], "\[IndentingNewLine]", ")"}], "&"}], ",", 
+                   "neighbors"}], "]"}], ";"}]}], "\[IndentingNewLine]", 
+               "]"}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+              RowBox[{"ans", "=", 
+               RowBox[{"Join", "[", 
+                RowBox[{"ans", ",", 
+                 RowBox[{"Reverse", "@", 
+                  RowBox[{"NestWhile", "[", 
+                   RowBox[{
+                    RowBox[{
+                    RowBox[{"Append", "[", 
+                    RowBox[{"#", ",", 
+                    RowBox[{"cameFrom", "[", 
+                    RowBox[{"Last", "@", "#"}], "]"}]}], "]"}], "&"}], ",", 
+                    RowBox[{"{", "sortedState", "}"}], ",", 
+                    RowBox[{
+                    RowBox[{"(", 
+                    RowBox[{
+                    RowBox[{"cameFrom", "[", 
+                    RowBox[{"Last", "@", "#"}], "]"}], "=!=", "Null"}], ")"}],
+                     "&"}]}], "]"}]}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+              
+              RowBox[{"Break", "[", "]"}]}], ",", "\[IndentingNewLine]", "10",
+              ",", "\[IndentingNewLine]", 
+             RowBox[{
+              RowBox[{"ans", "=", 
+               RowBox[{"Join", "[", 
+                RowBox[{"ans", ",", 
+                 RowBox[{"doRandomMoves", "[", "]"}]}], "]"}]}], ";", 
+              "\[IndentingNewLine]", 
+              RowBox[{"startState", "=", 
+               RowBox[{"Last", "@", "ans"}]}], ";", "\[IndentingNewLine]", 
+              RowBox[{"ans", "=", 
+               RowBox[{"ans", "[", 
+                RowBox[{"[", 
+                 RowBox[{";;", 
+                  RowBox[{"-", "2"}]}], "]"}], "]"}]}], ";"}]}], 
+            "\[IndentingNewLine]", "]"}], ";"}]}], "\[IndentingNewLine]", 
+         "]"}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+        RowBox[{"Return", "[", "ans", "]"}], ";"}]}], "\[IndentingNewLine]", 
+      "]"}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"Animated", " ", "solution"}], " ", "*)"}], 
+    "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"displaySolution", "[", "]"}], ":=", 
+     RowBox[{"Block", "[", 
+      RowBox[{
+       RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"Scan", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"SessionSubmit", "[", 
+            RowBox[{"ScheduledTask", "[", 
+             RowBox[{
+              RowBox[{"gameField", "=", 
+               RowBox[{"solution", "[", 
+                RowBox[{"[", "#", "]"}], "]"}]}], ",", 
+              RowBox[{"{", 
+               RowBox[{"Quantity", "[", 
+                RowBox[{
+                 RowBox[{"#", "*", "0.3"}], ",", "\"\<Seconds\>\""}], "]"}], 
+               "}"}]}], "]"}], "]"}], "&"}], ",", 
+          RowBox[{"Range", "@", 
+           RowBox[{"Length", "[", "solution", "]"}]}]}], "]"}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"spacePos", "=", 
+         RowBox[{"{", 
+          RowBox[{"1", ",", "1"}], "}"}]}], ";"}]}], "\[IndentingNewLine]", 
+      "]"}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"Front", "-", "end"}], " ", "*)"}], "\[IndentingNewLine]", 
+    RowBox[{"EventHandler", "[", 
+     RowBox[{
+      RowBox[{"Column", "[", 
+       RowBox[{"{", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"Dynamic", "[", 
+          RowBox[{"Grid", "[", 
+           RowBox[{
+            RowBox[{"gameField", "/.", 
+             RowBox[{"{", 
+              RowBox[{"0", "->", "Null"}], "}"}]}], ",", 
+            RowBox[{"Frame", "\[Rule]", "All"}], ",", 
+            RowBox[{"ItemSize", "\[Rule]", 
+             RowBox[{"{", 
+              RowBox[{"3", ",", "3"}], "}"}]}], ",", 
+            RowBox[{"ItemStyle", "\[Rule]", 
+             RowBox[{"Directive", "[", 
+              RowBox[{"FontSize", "\[Rule]", "20"}], "]"}]}]}], "]"}], "]"}], 
+         ",", "\[IndentingNewLine]", 
+         RowBox[{"InputField", "[", "]"}], ",", "\[IndentingNewLine]", 
+         RowBox[{"Button", "[", 
+          RowBox[{"\"\<Shuffle\>\"", ",", 
+           RowBox[{"shuffle", "[", "]"}]}], "]"}], ",", "\[IndentingNewLine]", 
+         RowBox[{"Button", "[", 
+          RowBox[{"\"\<Solve\>\"", ",", 
+           RowBox[{
+            RowBox[{"solution", "=", 
+             RowBox[{"solve", "[", "]"}]}], ";", 
+            RowBox[{"displaySolution", "[", "]"}]}]}], "]"}]}], 
+        "\[IndentingNewLine]", "}"}], "]"}], ",", "\[IndentingNewLine]", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"\"\<RightArrowKeyDown\>\"", " ", "\[RuleDelayed]", " ", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{
+            "spacePos", "\[LeftDoubleBracket]", "2", 
+             "\[RightDoubleBracket]"}], ">", "1"}], ",", 
+           RowBox[{
+            RowBox[{"gameField", "=", 
+             RowBox[{"move", "[", 
+              RowBox[{"gameField", ",", "spacePos", ",", 
+               RowBox[{"{", 
+                RowBox[{"0", ",", 
+                 RowBox[{"-", "1"}]}], "}"}]}], "]"}]}], ";", 
+            RowBox[{"spacePos", "+=", 
+             RowBox[{"{", 
+              RowBox[{"0", ",", 
+               RowBox[{"-", "1"}]}], "}"}]}]}], ",", "Null"}], "]"}]}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{"\"\<LeftArrowKeyDown\>\"", " ", "\[RuleDelayed]", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{
+            "spacePos", "\[LeftDoubleBracket]", "2", 
+             "\[RightDoubleBracket]"}], "<", "4"}], ",", 
+           RowBox[{
+            RowBox[{"gameField", "=", 
+             RowBox[{"move", "[", 
+              RowBox[{"gameField", ",", "spacePos", ",", 
+               RowBox[{"{", 
+                RowBox[{"0", ",", "1"}], "}"}]}], "]"}]}], ";", 
+            RowBox[{"spacePos", "+=", 
+             RowBox[{"{", 
+              RowBox[{"0", ",", "1"}], "}"}]}]}], ",", "Null"}], "]"}]}], ",",
+         "\[IndentingNewLine]", 
+        RowBox[{"\"\<DownArrowKeyDown\>\"", " ", "\[RuleDelayed]", " ", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{
+            "spacePos", "\[LeftDoubleBracket]", "1", 
+             "\[RightDoubleBracket]"}], ">", "1"}], ",", 
+           RowBox[{
+            RowBox[{"gameField", "=", 
+             RowBox[{"move", "[", 
+              RowBox[{"gameField", ",", "spacePos", ",", 
+               RowBox[{"{", 
+                RowBox[{
+                 RowBox[{"-", "1"}], ",", "0"}], "}"}]}], "]"}]}], ";", 
+            RowBox[{"spacePos", "+=", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"-", "1"}], ",", "0"}], "}"}]}]}], ",", "Null"}], 
+          "]"}]}], ",", "\[IndentingNewLine]", 
+        RowBox[{"\"\<UpArrowKeyDown\>\"", " ", "\[RuleDelayed]", " ", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{
+            "spacePos", "\[LeftDoubleBracket]", "1", 
+             "\[RightDoubleBracket]"}], "<", "4"}], ",", 
+           RowBox[{
+            RowBox[{"gameField", "=", 
+             RowBox[{"move", "[", 
+              RowBox[{"gameField", ",", "spacePos", ",", 
+               RowBox[{"{", 
+                RowBox[{"1", ",", "0"}], "}"}]}], "]"}]}], ";", 
+            RowBox[{"spacePos", "+=", 
+             RowBox[{"{", 
+              RowBox[{"1", ",", "0"}], "}"}]}]}], ",", "Null"}], "]"}]}]}], 
+       "\[IndentingNewLine]", "}"}]}], "]"}]}]}], "\[IndentingNewLine]", 
+  "]"}]}], "Input",
+ CellChangeTimes->{{3.86146708421247*^9, 3.86146710013409*^9}, {
+   3.861467180843689*^9, 3.86146719842183*^9}, {3.86146723948251*^9, 
+   3.861467346491501*^9}, {3.8614674208748283`*^9, 3.8614674221174726`*^9}, {
+   3.861467637467464*^9, 3.861467656095992*^9}, {3.861467892390956*^9, 
+   3.861467936950817*^9}, 3.8614976367509823`*^9, {3.8615138206934967`*^9, 
+   3.861513825355173*^9}, {3.8615139100058613`*^9, 3.8615139221059093`*^9}, {
+   3.8615475483121853`*^9, 3.86154755022649*^9}, {3.8615476538804197`*^9, 
+   3.86154765644732*^9}, {3.861587882729974*^9, 3.861587884048812*^9}, {
+   3.86159225619016*^9, 3.861592257018239*^9}, {3.8625659710369587`*^9, 
+   3.86256598264853*^9}, {3.926005237274591*^9, 3.926005360272746*^9}, {
+   3.9260054018325872`*^9, 3.926005524324016*^9}, {3.92600565332467*^9, 
+   3.926005713775916*^9}, {3.926005748565551*^9, 3.926005795754428*^9}, {
+   3.926005886297196*^9, 3.926005887904854*^9}, {3.926006187924488*^9, 
+   3.926006248015922*^9}, {3.926006801933124*^9, 3.926006829792171*^9}, {
+   3.926006878539618*^9, 3.926006884984418*^9}, {3.926006930174266*^9, 
+   3.926007027896256*^9}},ExpressionUUID->"3b09bd46-44ba-4f4a-afec-\
+b7d77f661975"],
+
+Cell[BoxData[
+ DynamicModuleBox[{$CellContext`sortedState$$ = {{0, 1, 2, 3}, {4, 5, 6, 7}, {
+  8, 9, 10, 11}, {12, 13, 14, 15}}, $CellContext`gameField$$ = {{13, 10, 14, 
+  4}, {7, 5, 3, 15}, {9, 6, 0, 1}, {11, 8, 12, 
+  2}}, $CellContext`spacePos$$ = {1, 
+  1}, $CellContext`solution$$ = CompressedData["
+1:eJyl2Vtu20AMRuGjS2RHsuw1ZEtdQhfQLqSbrooO4clvWRqSAfgQIB8hXqSR
+na+fv3/8GoA/W4wl1i3mLe7l98sWH1v8+7vHFp9bTPz/6bZYtrhucduib/SU
+HBFPdQ0Rv4gn6a8lR8bfSo6M70sOj9fauxOP+IfDU3K0esTfHZ6SI+LrHkb8
+RTxJb73zeMSvzvovCf8hnqRfxJP0V/EkfX3vRr3duxlvs/N4rf3h8JQcrR7x
+9xOP+NnpbfcyfhBP0k/ij/p/5ik5Wj3i5xOP+NHhKTkinuoaIn4RT9Jb7zLe
+djHj6/O61Wvtg8PD8yzyeqpr8HqkBq9fd3qQ8fXsWj3iF6ev+x/1k3gS3mbi
+qb/2Hw5PyRH1o3iS3mbh8Yhfnd7u9Yyva4/6QTwJbz2M+lk8Sf/u/D3yiF8c
+/d97/zjy8H3+Hg+v++fxe/uf8Z/iSfpePElv784ej/i7s/7e4ff6f+ThfP5H
+vmX/zvwsnqTvxR/1/8xTcrR6xK9Ob/vi8YifHR6+z9/re473z+MpOaL+Kp6k
+v4kn6e3Z4fGIX52+3v+ov4sn4W0mEW/9b/Xwev4ceXjdP49vOf/O/Nn55/Ud
+r+dfxh/N/51H/NHzY6/+zuH3+t/qYX/+rf7d/kW93bsZ7+m/ecTPTq+1t3jE
+Xxwent+XRPwgnoSH5+f5iO/Ek/A2g1aP+OuJR/zo9PW7TtTbrmW81Z7xF/Ek
+PCWHp/7aTw5v/Y/6TjxJb7PIeE//zSO+df42ryHoqa4h4ifxJH39/Gv1iO8c
+Hp7fV3o91TVE/CiepLfeZXz9f9VWj/jJ4a2HUd+JJ+Gt/60e8aPT/wVWxkNx
+
+  "], $CellContext`solve$$, $CellContext`displaySolution$$, \
+$CellContext`shuffle$$}, 
+  TagBox[
+   TagBox[GridBox[{
+      {
+       DynamicBox[ToBoxes[
+         Grid[
+          ReplaceAll[$CellContext`gameField$$, {0 -> Null}], Frame -> All, 
+          ItemSize -> {3, 3}, ItemStyle -> Directive[FontSize -> 20]], 
+         StandardForm],
+        ImageSizeCache->{153., {66.07000000000001, 70.57000000000001}}]},
+      {
+       TagBox[
+        DynamicModuleBox[{Typeset`i$$ = Null}, 
+         InputFieldBox[Dynamic[Typeset`i$$]],
+         DynamicModuleValues:>{}],
+        InputField[
+         Setting[#]]& ]},
+      {
+       ButtonBox["\<\"Shuffle\"\>",
+        Appearance->Automatic,
+        ButtonFunction:>$CellContext`shuffle$$[],
+        Evaluator->Automatic,
+        Method->"Preemptive"]},
+      {
+       ButtonBox["\<\"Solve\"\>",
+        Appearance->Automatic,
+        ButtonFunction:>($CellContext`solution$$ = $CellContext`solve$$[]; \
+$CellContext`displaySolution$$[]),
+        Evaluator->Automatic,
+        Method->"Preemptive"]}
+     },
+     DefaultBaseStyle->"Column",
+     GridBoxAlignment->{"Columns" -> {{Left}}},
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Column"],
+   EventHandlerTag[{
+    "RightArrowKeyDown" :> 
+     If[Part[$CellContext`spacePos$$, 2] > 
+       1, $CellContext`gameField$$ = \
+$CellContext`move[$CellContext`gameField$$, $CellContext`spacePos$$, {0, -1}]; 
+       AddTo[$CellContext`spacePos$$, {0, -1}], Null], "LeftArrowKeyDown" :> 
+     If[Part[$CellContext`spacePos$$, 2] < 
+       4, $CellContext`gameField$$ = \
+$CellContext`move[$CellContext`gameField$$, $CellContext`spacePos$$, {0, 1}]; 
+       AddTo[$CellContext`spacePos$$, {0, 1}], Null], "DownArrowKeyDown" :> 
+     If[Part[$CellContext`spacePos$$, 1] > 
+       1, $CellContext`gameField$$ = \
+$CellContext`move[$CellContext`gameField$$, $CellContext`spacePos$$, {-1, 0}]; 
+       AddTo[$CellContext`spacePos$$, {-1, 0}], Null], "UpArrowKeyDown" :> 
+     If[Part[$CellContext`spacePos$$, 1] < 
+       4, $CellContext`gameField$$ = \
+$CellContext`move[$CellContext`gameField$$, $CellContext`spacePos$$, {1, 0}]; 
+       AddTo[$CellContext`spacePos$$, {1, 0}], Null], Method -> "Preemptive", 
+     PassEventsDown -> Automatic, PassEventsUp -> True}]],
+  DynamicModuleValues:>{{DownValues[$CellContext`solve$$] = {HoldPattern[
+         $CellContext`solve$$[]] :> 
+       Block[{$CellContext`startState, $CellContext`currentState, \
+$CellContext`currentSpacePos, $CellContext`neighbors, $CellContext`state, \
+$CellContext`newCost, $CellContext`ans, $CellContext`doRandomMoves, \
+$CellContext`frontier, $CellContext`cameFrom, $CellContext`cost}, \
+$CellContext`ans = {}; $CellContext`startState = $CellContext`gameField$$; \
+$CellContext`doRandomMoves[] := 
+          Block[{$CellContext`moves, $CellContext`sp, $CellContext`prev}, \
+$CellContext`sp = 
+             FirstPosition[$CellContext`startState, 0]; $CellContext`prev = 
+             Null; NestList[($CellContext`prev = RandomChoice[
+                 DeleteCases[-$CellContext`prev][
+                  $CellContext`possibleDirs[$CellContext`sp]]]; 
+              AddTo[$CellContext`sp, $CellContext`prev]; $CellContext`move[#, \
+$CellContext`sp - $CellContext`prev, $CellContext`prev])& , \
+$CellContext`startState, 50]]; 
+         While[True, $CellContext`frontier = 
+            CreateDataStructure[
+             "PriorityQueue", {{0, $CellContext`startState}}, First[#] > 
+              First[#2]& ]; $CellContext`cameFrom = <|$CellContext`startState -> 
+              Null|>; $CellContext`cost = <|$CellContext`startState -> 0|>; 
+           TimeConstrained[While[True, $CellContext`currentState = Last[
+                  $CellContext`frontier["Pop"]]; 
+               If[$CellContext`currentState == $CellContext`sortedState$$, 
+                 Break[], Null]; $CellContext`currentSpacePos = 
+                FirstPosition[$CellContext`currentState, 
+                  0]; $CellContext`neighbors = 
+                Map[$CellContext`move[$CellContext`currentState, \
+$CellContext`currentSpacePos, #]& , 
+                  $CellContext`possibleDirs[$CellContext`currentSpacePos]]; \
+$CellContext`newCost = $CellContext`cost[$CellContext`currentState] + 1; 
+               Scan[(If[$CellContext`newCost < Lookup[$CellContext`cost, 
+                    Key[#], 
+                    1000000000000000000], $CellContext`cost[#] = \
+$CellContext`newCost; $CellContext`frontier[
+                    "Push", {$CellContext`newCost + $CellContext`h[#], #}]; \
+$CellContext`cameFrom[#] = $CellContext`currentState, Null]; 
+                 Null)& , $CellContext`neighbors]; Null]; $CellContext`ans = 
+              Join[$CellContext`ans, 
+                Reverse[
+                 NestWhile[Append[#, 
+                   $CellContext`cameFrom[
+                    
+                    Last[#]]]& , {$CellContext`sortedState$$}, \
+$CellContext`cameFrom[
+                    Last[#]] =!= Null& ]]]; Break[], 
+             10, $CellContext`ans = Join[$CellContext`ans, 
+                $CellContext`doRandomMoves[]]; $CellContext`startState = 
+              Last[$CellContext`ans]; $CellContext`ans = 
+              Part[$CellContext`ans, 
+                Span[1, -2]]; Null]; Null]; Return[$CellContext`ans]; 
+         Null]}}, {DownValues[$CellContext`displaySolution$$] = {HoldPattern[
+         $CellContext`displaySolution$$[]] :> Block[{}, Scan[SessionSubmit[
+            
+            ScheduledTask[$CellContext`gameField$$ = 
+             Part[$CellContext`solution$$, #], {
+              Quantity[# 0.3, "Seconds"]}]]& , 
+           Range[
+            Length[$CellContext`solution$$]]]; $CellContext`spacePos$$ = {1, 
+           1}; Null]}}, {DownValues[$CellContext`shuffle$$] = {HoldPattern[
+         $CellContext`shuffle$$[]] :> 
+       Block[{$CellContext`moves, $CellContext`m}, 
+         Do[$CellContext`moves = \
+$CellContext`possibleDirs[$CellContext`spacePos$$]; $CellContext`m = 
+            RandomChoice[$CellContext`moves]; $CellContext`gameField$$ = \
+$CellContext`move[$CellContext`gameField$$, $CellContext`spacePos$$, \
+$CellContext`m]; AddTo[$CellContext`spacePos$$, $CellContext`m], 2000]; 
+         Null]}}}]], "Output",
+ CellChangeTimes->{
+  3.8614676575640287`*^9, {3.861467897056539*^9, 3.8614679067378073`*^9}, 
+   3.861467937849146*^9, 3.861468341336856*^9, 3.86149758457652*^9, 
+   3.8614976373945637`*^9, {3.8615133989352293`*^9, 3.8615134164009666`*^9}, {
+   3.861513809864032*^9, 3.8615138256819887`*^9}, 3.8615474855035353`*^9, 
+   3.861547550810248*^9, 3.8615476573952293`*^9, 3.8615878849209003`*^9, {
+   3.8615922479360733`*^9, 3.8615922579200363`*^9}, 3.862565667022677*^9, {
+   3.8625659652566843`*^9, 3.862565983208098*^9}, 3.926005172716964*^9},
+ CellLabel->"Out[18]=",ExpressionUUID->"3cd9db61-6f05-442d-a0fd-4096d43c19a2"]
+}, Open  ]],
+
+Cell["\<\
+
+The tiles can be moved by arrows. To not lose the focus, you can use the \
+input field. You can press any of the buttons at any time: 
+\[CenterDot] Shuffle makes a large number of random movements starting from \
+the current position. 
+\[CenterDot] Solve searches for and displays the solution to the puzzle.\
+\>", "Text",
+ CellChangeTimes->{{3.926007069327457*^9, 3.92600712076867*^9}, {
+  3.926007184224955*^9, 
+  3.926007229147386*^9}},ExpressionUUID->"247770b9-089f-4960-adde-\
+580d0b126038"]
+},
+WindowSize->{1152, 648},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+Magnification:>0.8 Inherited,
+FrontEndVersion->"13.0 for Linux x86 (64-bit) (December 2, 2021)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"5a5d645c-3390-4730-b04d-756581d262a9"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 22221, 525, 1724, "Input",ExpressionUUID->"3b09bd46-44ba-4f4a-afec-b7d77f661975"],
+Cell[22804, 549, 8019, 153, 227, "Output",ExpressionUUID->"3cd9db61-6f05-442d-a0fd-4096d43c19a2"]
+}, Open  ]],
+Cell[30838, 705, 507, 11, 83, "Text",ExpressionUUID->"247770b9-089f-4960-adde-580d0b126038"]
+}
+]
+*)
+
