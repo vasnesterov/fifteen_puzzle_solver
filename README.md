@@ -7,4 +7,4 @@ To address this, we use a modified heuristic function: a weighted sum of the Man
 
 However, "hard" states, which are far from the goal, remain unsolvable within a reasonable time. To work around this, if the A* algorithm takes too long, we perform some random moves to bring the state to an "average" position and then run the A* algorithm again.
 
-![](https://github.com/vasnesterov/fifteen_puzzle_solver/example.gif)
+![](https://github.com/vasnesterov/fifteen_puzzle_solver/blob/main/example.gif)
